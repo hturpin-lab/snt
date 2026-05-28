@@ -253,7 +253,7 @@ flashcard: {
                     question: "Quel dispositif technique permet à un serveur web de mémoriser les préférences d'un utilisateur ou de tracer sa navigation ?",
                     options: [
                         "A. Le protocole SMTP.",
-                        "B. La balise <title>.",
+                        "B. La balise title.",
                         "C. Les cookies.",
                         "D. Le cache du processeur."
                     ],
