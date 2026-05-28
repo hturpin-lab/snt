@@ -37,25 +37,158 @@ class SNTApp {
         }
     }
 
-    renderChapterCards() {
-        const grid = document.getElementById('chapters-grid');
-        
-        sntData.chapters.forEach(chapter => {
-            const card = document.createElement('div');
-            card.className = 'chapter-card';
-            card.dataset.chapterId = chapter.id;
-            
-            card.innerHTML = `
-                <div class="chapter-icon">${chapter.icon}</div>
-                <div class="chapter-number">Chapitre ${chapter.id}</div>
-                <div class="chapter-title">${chapter.title}</div>
-            `;
-            
-            card.addEventListener('click', () => this.toggleChapter(chapter.id, card));
-            grid.appendChild(card);
-        });
-    }
+// Remplacer la méthode renderChapterCards dans la classe SNTApp
 
+    renderChapterCards() {
+    const grid = document.getElementById('chapters-grid');
+    
+    // Ajouter le conteneur de sélection avant la grille
+    const chapterSection = document.querySelector('.chapter-selection');
+    
+    // Insérer le conteneur de sélection
+    const selectAllContainer = document.createElement('div');
+    selectAllContainer.className = 'select-all-container';
+    selectAllContainer.innerHTML = `
+        <button id="select-all-btn" class="select-all-btn">
+            <span class="select-icon">☐</span>
+            <span id="select-all-text">Tout sélectionner</span>
+        </button>
+        <div class="selection-counter">
+            <span class="count" id="selected-count">0</span>
+            <span> / </span>
+            <span class="total">${sntData.chapters.length}</span>
+            <span> chapitres sélectionnés</span>
+        </div>
+    `;
+    
+    // Insérer avant la grille
+    const chaptersGrid = document.getElementById('chapters-grid');
+    chaptersGrid.parentNode.insertBefore(selectAllContainer, chaptersGrid);
+    
+    // Créer les cartes de chapitres
+    sntData.chapters.forEach(chapter => {
+        const card = document.createElement('div');
+        card.className = 'chapter-card';
+        card.dataset.chapterId = chapter.id;
+        
+        card.innerHTML = `
+            <div class="chapter-icon">${chapter.icon}</div>
+            <div class="chapter-number">Chapitre ${chapter.id}</div>
+            <div class="chapter-title">${chapter.title}</div>
+        `;
+        
+        card.addEventListener('click', () => this.toggleChapter(chapter.id, card));
+        grid.appendChild(card);
+    });
+    
+    // Configurer le bouton "Tout sélectionner"
+    this.setupSelectAllButton();
+}
+
+// Ajouter ces nouvelles méthodes dans la classe SNTApp
+
+    setupSelectAllButton() {
+    const selectAllBtn = document.getElementById('select-all-btn');
+    const selectAllText = document.getElementById('select-all-text');
+    const selectIcon = selectAllBtn.querySelector('.select-icon');
+    
+    selectAllBtn.addEventListener('click', () => {
+        const allCards = document.querySelectorAll('.chapter-card');
+        const allSelected = this.selectedChapters.length === sntData.chapters.length;
+        
+        if (allSelected) {
+            // Tout désélectionner
+            this.deselectAll(allCards);
+            selectAllText.textContent = 'Tout sélectionner';
+            selectIcon.textContent = '☐';
+            selectAllBtn.classList.remove('all-selected');
+        } else {
+            // Tout sélectionner
+            this.selectAll(allCards);
+            selectAllText.textContent = 'Tout désélectionner';
+            selectIcon.textContent = '☑';
+            selectAllBtn.classList.add('all-selected');
+        }
+    });
+}
+
+    selectAll(cards) {
+    this.selectedChapters = [];
+    cards.forEach(card => {
+        const chapterId = parseInt(card.dataset.chapterId);
+        this.selectedChapters.push(chapterId);
+        card.classList.add('selected');
+        
+        // Ajouter une animation
+        card.classList.add('selecting');
+        setTimeout(() => {
+            card.classList.remove('selecting');
+        }, 300);
+    });
+    this.updateSelectionCounter();
+    this.updateActionButtons();
+    this.updateSelectAllButton();
+}
+
+    deselectAll(cards) {
+    this.selectedChapters = [];
+    cards.forEach(card => {
+        card.classList.remove('selected');
+    });
+    this.updateSelectionCounter();
+    this.updateActionButtons();
+    this.updateSelectAllButton();
+}
+
+    toggleChapter(chapterId, cardElement) {
+    const index = this.selectedChapters.indexOf(chapterId);
+    
+    if (index > -1) {
+        this.selectedChapters.splice(index, 1);
+        cardElement.classList.remove('selected');
+    } else {
+        this.selectedChapters.push(chapterId);
+        cardElement.classList.add('selected');
+    }
+    
+    this.updateSelectionCounter();
+    this.updateActionButtons();
+    this.updateSelectAllButton();
+}
+
+    updateSelectionCounter() {
+    const counter = document.getElementById('selected-count');
+    if (counter) {
+        counter.textContent = this.selectedChapters.length;
+        
+        // Animation du compteur
+        counter.style.transform = 'scale(1.2)';
+        counter.style.transition = 'transform 0.3s ease';
+        setTimeout(() => {
+            counter.style.transform = 'scale(1)';
+        }, 300);
+    }
+}
+
+    updateSelectAllButton() {
+    const selectAllBtn = document.getElementById('select-all-btn');
+    const selectAllText = document.getElementById('select-all-text');
+    const selectIcon = selectAllBtn.querySelector('.select-icon');
+    
+    if (!selectAllBtn || !selectAllText || !selectIcon) return;
+    
+    const allSelected = this.selectedChapters.length === sntData.chapters.length;
+    
+    if (allSelected) {
+        selectAllText.textContent = 'Tout désélectionner';
+        selectIcon.textContent = '☑';
+        selectAllBtn.classList.add('all-selected');
+    } else {
+        selectAllText.textContent = 'Tout sélectionner';
+        selectIcon.textContent = '☐';
+        selectAllBtn.classList.remove('all-selected');
+    }
+}
     toggleChapter(chapterId, cardElement) {
         const index = this.selectedChapters.indexOf(chapterId);
         
@@ -110,18 +243,33 @@ class SNTApp {
         }
     }
 
-    showHome() {
-        document.getElementById('qcm-page').classList.remove('active');
-        document.getElementById('flashcards-page').classList.remove('active');
-        document.getElementById('home-page').classList.add('active');
-        
-        // Réinitialiser les sélections
-        this.selectedChapters = [];
-        document.querySelectorAll('.chapter-card').forEach(card => {
-            card.classList.remove('selected');
-        });
-        this.updateActionButtons();
+// Remplacer la méthode showHome existante
+
+showHome() {
+    document.getElementById('qcm-page').classList.remove('active');
+    document.getElementById('flashcards-page').classList.remove('active');
+    document.getElementById('home-page').classList.add('active');
+    
+    // Réinitialiser les sélections
+    this.selectedChapters = [];
+    document.querySelectorAll('.chapter-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Réinitialiser le bouton "Tout sélectionner"
+    const selectAllBtn = document.getElementById('select-all-btn');
+    const selectAllText = document.getElementById('select-all-text');
+    const selectIcon = selectAllBtn?.querySelector('.select-icon');
+    
+    if (selectAllBtn && selectAllText && selectIcon) {
+        selectAllText.textContent = 'Tout sélectionner';
+        selectIcon.textContent = '☐';
+        selectAllBtn.classList.remove('all-selected');
     }
+    
+    this.updateSelectionCounter();
+    this.updateActionButtons();
+}
 
     getSelectedQuestions() {
         let questions = [];

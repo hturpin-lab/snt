@@ -206,3 +206,97 @@
         max-width: 300px;
     }
 }
+/* Ajouter ces styles à la fin de home.css */
+
+.select-all-container {
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.select-all-btn {
+    padding: 12px 28px;
+    background: transparent;
+    border: 2px solid var(--accent-cyan);
+    color: var(--accent-cyan);
+    border-radius: 30px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.select-all-btn:hover {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+    transform: translateY(-2px);
+}
+
+.select-all-btn .select-icon {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+}
+
+.select-all-btn:hover .select-icon {
+    transform: rotate(180deg);
+}
+
+.select-all-btn.all-selected {
+    background: rgba(0, 255, 136, 0.1);
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+}
+
+.select-all-btn.all-selected .select-icon {
+   /* transform: rotate(180deg);*/
+}
+
+.select-all-btn.all-selected:hover {
+    background: rgba(255, 68, 68, 0.1);
+    border-color: #ff4444;
+    color: #ff4444;
+    box-shadow: 0 0 20px rgba(255, 68, 68, 0.2);
+}
+
+.selection-counter {
+    color: var(--text-secondary);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.selection-counter .count {
+    color: var(--accent-green);
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.selection-counter .total {
+    color: var(--accent-cyan);
+    font-weight: 600;
+}
+
+/* Animation de sélection rapide */
+@keyframes selectPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+.chapter-card.selecting {
+    animation: selectPulse 0.3s ease;
+}
